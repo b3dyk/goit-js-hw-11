@@ -45,6 +45,9 @@ class ImageSearch {
       const response = await axios.get(URI);
 
       this.handleRes(response);
+      this.smoothScroll();
+
+      Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
     } catch (err) {
       this.handleError(err);
     }
@@ -56,20 +59,21 @@ class ImageSearch {
     }
     this.renderCards(data.hits);
 
-    Notify.success(`Hooray! We found ${data.totalHits} images.`);
-
-    new SimpleLightbox('.gallery a', {
-      captionsData: 'alt',
-      captionDelay: 250,
-    });
+    new SimpleLightbox('.gallery a');
   }
 
   handleError(err) {
-    console.log(err);
-    console.log(err.response);
+    if (err.name !== 'AxiosError') {
+      console.log(err);
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      return;
+    }
 
+    console.log(err.response);
     Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
+      "We're sorry, but you've reached the end of search results."
     );
   }
 
@@ -119,6 +123,16 @@ class ImageSearch {
       this.pageCounter += 1;
       this.getImages();
     }
+  }
+
+  smoothScroll() {
+    const { height: cardHeight } =
+      this.gallery.firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
   }
 }
 
