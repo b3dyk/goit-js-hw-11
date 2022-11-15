@@ -25,7 +25,7 @@ class ImageSearch {
   onSubmit(evt) {
     evt.preventDefault();
 
-    this.searchValue = evt.target.elements.searchQuery.value;
+    this.searchValue = evt.currentTarget.elements.searchQuery.value;
 
     if (this.searchValue === '') {
       Notify.failure('Please clarify your search');
@@ -37,23 +37,26 @@ class ImageSearch {
     this.getImages();
   }
 
-  getImages() {
-    const query = `&q=${this.searchValue}`;
-    const URI = this.URI + this.pageCounter + query;
+  async getImages() {
+    try {
+      const query = `&q=${this.searchValue}`;
+      const URI = this.URI + this.pageCounter + query;
 
-    axios
-      .get(URI)
-      .then(this.handleRes.bind(this))
-      .catch(this.handleError.bind(this));
+      const response = await axios.get(URI);
+
+      this.handleRes(response);
+    } catch (err) {
+      this.handleError(err);
+    }
   }
 
-  handleRes(res) {
-    if (res.data.total === 0) {
+  handleRes({ data }) {
+    if (data.total === 0) {
       throw new Error('No matches found');
     }
-    this.renderCards(res.data.hits);
+    this.renderCards(data.hits);
 
-    Notify.success(`Hooray! We found ${res.data.totalHits} images.`);
+    Notify.success(`Hooray! We found ${data.totalHits} images.`);
 
     new SimpleLightbox('.gallery a', {
       captionsData: 'alt',
@@ -64,6 +67,7 @@ class ImageSearch {
   handleError(err) {
     console.log(err);
     console.log(err.response);
+
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
