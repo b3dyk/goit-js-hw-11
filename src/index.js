@@ -119,7 +119,11 @@ class ImageSearch {
   endlessScroll() {
     const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
 
-    if (clientHeight + scrollTop === scrollHeight) {
+    if (scrollHeight < 1500) {
+      return;
+    }
+
+    if (scrollTop + clientHeight === scrollHeight) {
       this.pageCounter += 1;
       this.getImages();
     }
