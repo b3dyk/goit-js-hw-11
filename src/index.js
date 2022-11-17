@@ -3,6 +3,8 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import axios from 'axios';
 
+const slider = new SimpleLightbox('.gallery a');
+
 class ImageSearch {
   constructor({ form, searchBtn, gallery }, URI) {
     this.form = form;
@@ -59,7 +61,7 @@ class ImageSearch {
     }
     this.renderCards(data.hits);
 
-    new SimpleLightbox('.gallery a');
+    slider.refresh();
   }
 
   handleError(err) {
