@@ -39,7 +39,7 @@ class ImageSearch {
     this.getImages();
   }
 
-  async getImages() {
+  async getImages(action = 'submit') {
     try {
       const query = `&q=${this.searchValue}`;
       const URI = this.URI + this.pageCounter + query;
@@ -48,6 +48,13 @@ class ImageSearch {
 
       this.handleRes(response);
       this.smoothScroll();
+
+      if (action === 'scroll') {
+        Notify.success(
+          `Here you have another ${response.data.hits.length} images`
+        );
+        return;
+      }
 
       Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
     } catch (err) {
@@ -59,6 +66,8 @@ class ImageSearch {
     if (data.total === 0) {
       throw new Error('No matches found');
     }
+
+    console.log(data);
     this.renderCards(data.hits);
 
     slider.refresh();
@@ -127,7 +136,7 @@ class ImageSearch {
 
     if (scrollTop + clientHeight === scrollHeight) {
       this.pageCounter += 1;
-      this.getImages();
+      this.getImages('scroll');
     }
   }
 
