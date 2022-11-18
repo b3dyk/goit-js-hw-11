@@ -67,24 +67,34 @@ class ImageSearch {
       throw new Error('No matches found');
     }
 
-    console.log(data);
+    if (data.hits.length === 0) {
+      throw new Error('End of collection');
+    }
+
     this.renderCards(data.hits);
 
     slider.refresh();
   }
 
   handleError(err) {
-    if (err.name !== 'AxiosError') {
-      console.log(err);
+    if (err.name === 'AxiosError') {
+      console.log(err.response);
       Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
+        "We're sorry, but you've reached the end of search results."
       );
       return;
     }
 
-    console.log(err.response);
+    if (err.message === 'End of collection') {
+      Notify.failure(
+        "We're sorry, but you've reached the end of search results."
+      );
+      return;
+    }
+
+    console.log(err);
     Notify.failure(
-      "We're sorry, but you've reached the end of search results."
+      'Sorry, there are no images matching your search query. Please try again.'
     );
   }
 
